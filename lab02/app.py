@@ -3,7 +3,6 @@ from cipher.caesar import CaesarCipher
 from flask import jsonify
 from cipher.railFence import RailFenceCipher
 from cipher.playFair import PlayFairCipher
-from cipher.tranposition import TranspositionCipher
 from cipher.vigenere import VigenereCipher
 
 app = Flask(__name__)
@@ -83,25 +82,25 @@ def decrypt_playfair():
     return render_template("playFair.html", decryptedText=decryptedText)
 
 
-@app.route("/transposition")
-def transposition():
-    return render_template("tranposition.html")
+# @app.route("/transposition")
+# def transposition():
+#     return render_template("tranposition.html")
 
-@app.route("/encrypt_transposition", methods=["POST"])
-def encrypt_transposition():
-    plainText = request.form.get("inputPlainText")
-    key = int(request.form.get("inputKey"))
-    transposition_cipher = TranspositionCipher()
-    encryptedText = transposition_cipher.encrypt(plainText, key)
-    return render_template("tranposition.html", encryptedText=encryptedText)
+# @app.route("/encrypt_transposition", methods=["POST"])
+# def encrypt_transposition():
+#     plainText = request.form.get("inputPlainText")
+#     key = int(request.form.get("inputKey"))
+#     transposition_cipher = TranspositionCipher()
+#     encryptedText = transposition_cipher.encrypt(plainText, key)
+#     return render_template("tranposition.html", encryptedText=encryptedText)
 
-@app.route("/decrypt_transposition", methods=["POST"])
-def decrypt_transposition():
-    encryptedText = request.form.get("inputEncryptedText")
-    key = int(request.form.get("inputKey"))
-    transposition_cipher = TranspositionCipher()
-    decryptedText = transposition_cipher.decrypt(encryptedText, key)
-    return render_template("tranposition.html", decryptedText=decryptedText)
+# @app.route("/decrypt_transposition", methods=["POST"])
+# def decrypt_transposition():
+#     encryptedText = request.form.get("inputEncryptedText")
+#     key = int(request.form.get("inputKey"))
+#     transposition_cipher = TranspositionCipher()
+#     decryptedText = transposition_cipher.decrypt(encryptedText, key)
+#     return render_template("tranposition.html", decryptedText=decryptedText)
 
 @app.route("/vigenere")
 def vigenere():

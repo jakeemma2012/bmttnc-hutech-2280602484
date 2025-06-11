@@ -3,14 +3,12 @@ from cipher.caesar import CaesarCipher
 from cipher.vigenere import VigenereCipher
 from cipher.railFence.raifence_cipher import RailFenceCipher
 from cipher.playFair.playfair_cipher import PlayFairCipher
-from cipher.tranposition.trans_cipher import TranspositionCipher
 
 app = Flask(__name__)
 caesar_cipher = CaesarCipher()
 vigenere_cipher = VigenereCipher()
 rail_fence_cipher = RailFenceCipher()
 playfair_cipher = PlayFairCipher()
-transposition_cipher = TranspositionCipher()
 
 @app.route('/api/transposition/encrypt', methods=['POST'])
 def transposition_encrypt():
