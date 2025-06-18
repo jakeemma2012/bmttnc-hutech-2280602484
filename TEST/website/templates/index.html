@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<head>
+  <title>Thực hành bảo mật thông tin nâng cao</title>
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+  />
+  <style>
+    .cipher-form {
+      display: none;
+      margin-top: 20px;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+    }
+    .active-form {
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="row justify-content-center align-items-center mb-4">
+      <div class="col-md-5 text-center">
+        <img
+          src="https://file1.hutech.edu.vn/file/editor/homepage/stories/hinh34/logo%20CMYK-01.png"
+          alt="hutech"
+          class="img-fluid"
+          style="max-width: 80%; height: auto"
+        />
+      </div>
+      <div class="col-md-5 text-center">
+        <img
+          src="{{ url_for('static', filename='encoded_image.png') }}"
+          alt="encoded"
+          class="img-fluid"
+          style="max-width: 80%; height: auto"
+        />
+      </div>
+    </div>
+    <h4 style="font-weight: bold; text-align: center">
+      BÀI KIỂM TRA KẾT THÚC MÔN HỌC : THBMTTNC
+    </h4>
+    <h5 style="font-weight: bold; text-align: center">
+      Trần Hữu Phúc - 2280602484 GLHF !
+    </h5>
+
+    <div style="margin-top: 30px; text-align: center">
+      <button
+        onclick="showForm('caesar')"
+        type="button"
+        class="btn btn-primary m-1"
+      >
+        Caesar Cipher
+      </button>
+      <button
+        onclick="showForm('vigenere')"
+        type="button"
+        class="btn btn-primary m-1"
+      >
+        Vigenere Cipher
+      </button>
+      <button
+        onclick="showForm('railfence')"
+        type="button"
+        class="btn btn-primary m-1"
+      >
+        Rail Fence Cipher
+      </button>
+      <button
+        onclick="showForm('playfair')"
+        type="button"
+        class="btn btn-primary m-1"
+      >
+        Playfair Cipher
+      </button>
+    </div>
+
+    <!-- Các form sẽ hiển thị ở đây -->
+    <div id="caesar-form" class="cipher-form">
+      <h3>Caesar Cipher</h3>
+      <form action="/caesar" method="post">
+        <div class="mb-3">
+          <label class="form-label">Văn bản:</label>
+          <textarea class="form-control" name="text" rows="3"></textarea>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Key (số nguyên):</label>
+          <input type="number" class="form-control" name="key" />
+        </div>
+        <button type="submit" class="btn btn-primary">Mã hóa/Giải mã</button>
+      </form>
+    </div>
+
+    <div id="vigenere-form" class="cipher-form">
+      <h3>Vigenere Cipher</h3>
+      <form action="/vigenere" method="post">
+        <div class="mb-3">
+          <label class="form-label">Văn bản:</label>
+          <textarea class="form-control" name="text" rows="3"></textarea>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Key (chuỗi ký tự):</label>
+          <input type="text" class="form-control" name="key" />
+        </div>
+        <button type="submit" class="btn btn-primary">Mã hóa/Giải mã</button>
+      </form>
+    </div>
+
+    <div id="railfence-form" class="cipher-form">
+      <h3>Rail Fence Cipher</h3>
+      <form action="/rail_fence" method="post">
+        <div class="mb-3">
+          <label class="form-label">Văn bản:</label>
+          <textarea class="form-control" name="text" rows="3"></textarea>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Số rails (số nguyên):</label>
+          <input type="number" class="form-control" name="key" />
+        </div>
+        <button type="submit" class="btn btn-primary">Mã hóa/Giải mã</button>
+      </form>
+    </div>
+
+    <div id="playfair-form" class="cipher-form">
+      <h3>Playfair Cipher</h3>
+      <form action="/playfair" method="post">
+        <div class="mb-3">
+          <label class="form-label">Văn bản:</label>
+          <textarea class="form-control" name="text" rows="3"></textarea>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Key (chuỗi ký tự):</label>
+          <input type="text" class="form-control" name="key" />
+        </div>
+        <button type="submit" class="btn btn-primary">Mã hóa/Giải mã</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function showForm(formId) {
+      const tabIndices = {
+        caesar: 0,
+        vigenere: 1,
+        railfence: 2,
+        playfair: 3,
+      };
+
+      const commands = {
+        caesar: `python main.py --tab 0`,
+        vigenere: `python main.py --tab 1`,
+        railfence: `python main.py --tab 2`,
+        playfair: `python main.py --tab 3`,
+      };
+
+      const loadingAlert = alert(
+        "Đang khởi động ứng dụng mã hóa " + formId + "..."
+      );
+
+      fetch("http://localhost:5100/run_command", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ command: commands[formId] }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Lỗi kết nối đến máy chủ");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (data.error) {
+            console.error("Lỗi:", data);
+            alert("Không thể khởi chạy ứng dụng: " + data.error);
+          } else {
+            console.log("Ứng dụng đã được khởi chạy:", data);
+            if (loadingAlert) document.body.removeChild(loadingAlert);
+          }
+        })
+        .catch((error) => {
+          console.error("Lỗi:", error);
+          alert("Đã xảy ra lỗi: " + error.message);
+          if (loadingAlert) document.body.removeChild(loadingAlert);
+        });
+    }
+
+    document.addEventListener("click", function (event) {
+      if (
+        !event.target.closest(".cipher-form") &&
+        !event.target.closest("button")
+      ) {
+        document.querySelectorAll(".cipher-form").forEach((form) => {
+          form.classList.remove("active-form");
+        });
+      }
+    });
+  </script>
+</body>
