@@ -23,12 +23,20 @@ class MyApp(QMainWindow):
             3: self.ui.bt_PlayFair
         }
         
-        # Set initial tab
-        self.change_tab(initial_tab)
+        # Set window properties
+        self.setMinimumSize(800, 600)  # Set minimum size to prevent window from being too small
+        self.setWindowTitle("CIPHER ENCRYPT")
         
         # Connect buttons with lambda to pass tab index
         for idx, button in self.nav_buttons.items():
             button.clicked.connect(lambda checked, x=idx: self.change_tab(x))
+        
+        # Set initial tab after connections are made
+        self.change_tab(initial_tab)
+        
+        # Adjust size after everything is set up
+        self.adjustSize()
+        self.setFixedSize(self.size())  # Prevent resizing
         
         #Setup button for each page
         self.ui.bt_CeasarEncrypt.clicked.connect(self.call_api_caesar_encrypt)
@@ -285,6 +293,7 @@ class MyApp(QMainWindow):
             print("Error: ", e)
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Critical)
+            msg.setWindowFlags(msg.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
             msg.setText("Error: "+str(e))
             msg.setWindowTitle("Error")
             msg.setStandardButtons(QMessageBox.Ok)
@@ -327,11 +336,25 @@ class MyApp(QMainWindow):
         if not hasattr(self, 'current_tab'):
             # First time setting a tab
             self.current_tab = tab_index
-            # Disable all other navigation buttons
+            
+            # Define cipher names for each tab
+            cipher_names = {
+                0: "CAESAR CIPHER",
+                1: "VIGENÈRE CIPHER",
+                2: "RAIL FENCE CIPHER",
+                3: "PLAYFAIR CIPHER"
+            }
+            
+            if hasattr(self.ui, 'label'):  
+                self.ui.label.setText(cipher_names.get(tab_index, "CIPHER ENCRYPT"))
+            
             for idx, button in self.nav_buttons.items():
-                button.setEnabled(idx == tab_index)
-            # Change to selected tab
+                button.setVisible(idx == tab_index)
+                
             self.ui.stackedWidget_Main.setCurrentIndex(tab_index)
+            
+            self.adjustSize()
+            
         # If trying to change to a different tab, show a message
         elif tab_index != self.current_tab:
             QMessageBox.information(
@@ -343,7 +366,18 @@ class MyApp(QMainWindow):
     def closeEvent(self, event):
         """Handle window close event"""
         try:
-            # Add any cleanup code here if needed
+            # Reset the UI state when closing
+            if hasattr(self, 'current_tab'):
+                # Show all navigation buttons
+                for button in self.nav_buttons.values():
+                    button.setVisible(True)
+                # Reset the title
+                if hasattr(self.ui, 'label'):
+                    self.ui.label.setText("CIPHER ENCRYPT")
+                # Clear the current tab
+                del self.current_tab
+                # Resize window to fit the content
+                self.adjustSize()
             print("Application is closing...")
         except Exception as e:
             print(f"Error during close: {e}")
